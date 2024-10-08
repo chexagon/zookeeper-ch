@@ -18,6 +18,10 @@
 
 package org.apache.zookeeper.client;
 
+import org.apache.yetus.audience.InterfaceAudience;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
@@ -26,10 +30,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-
-import org.apache.yetus.audience.InterfaceAudience;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Most simple HostProvider, resolves on every next() call.
@@ -132,10 +132,9 @@ public final class StaticHostProvider implements HostProvider {
                 hostString = addr.getHostName();
             }
         } else {
-            // According to the Java 6 documentation, if the hostname is
-            // unresolved, then the string before the colon is the hostname.
-            String addrString = addr.toString();
-            hostString = addrString.substring(0, addrString.lastIndexOf(':'));
+            // use getHostString to avoid '<unresolved>' markers introduced in jdk14
+            // https://issues.apache.org/jira/browse/ZOOKEEPER-3779
+            hostString = addr.getHostString();
         }
 
         return hostString;
